@@ -68,5 +68,5 @@ source "$TESTONLINUX/lib/sources"
 # Ok we are now good
 
 POLT_System_BuildRep
-POLT_System_GetModuleList
+[ "$1" = "" ] && $1 || POLT_System_GetModuleList
 
