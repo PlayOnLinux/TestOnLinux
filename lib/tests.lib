@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+# Check an url 
+# 1 - URL
+# 2 - MD5
+POLT_DownloadAndCheck()
+{
+	cd "$POLT_USER_ROOT/tmp/"
+	if $POLT_WGET "$1" -O download_test; then
+		if [ "$(POLT_MD5_file download_test)" = "$2" ]; then
+			rm download_test
+			return 0;
+		else
+			rm download_test
+			return 1;
+		fi
+	else
+		rm download_test
+		return 2;
+	fi
+}

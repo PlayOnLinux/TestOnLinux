@@ -1,0 +1,33 @@
+#!/bin/bash
+
+[ "$TESTONLINUX" = "" ] && exit 0
+source "$TESTONLINUX/lib/sources"
+
+TITLE="Make a single test"
+
+POLT_CLI_Title "$TITLE"
+
+POLT_System_GetList
+i=1
+for script in $(cat "$POLT_USER_ROOT/scripts"); do
+		echo "$i) $script"
+		i=$(( i + 1 ))
+done
+POLT_CLI_scanf "Your choice?" "num"
+
+choosen_script="$(cat "$POLT_USER_ROOT/scripts" | getline "$num")"
+
+POLT_System_GetTests "$choosen_script"
+POLT_System_TestList "$choosen_script" || POL_CLI_fatal "No tests downloaded"
+i=1
+for test in $(cat "$POLT_USER_ROOT/tests/${choosen_script}_header"); do
+	echo "$i) $test"
+	i=$(( i + 1 ))
+done
+
+POLT_CLI_scanf "Your choice?" "num"
+choosen_test="$(cat "$POLT_USER_ROOT/tests/${choosen_script}_header" | getline "$num")"
+
+source "$POLT_USER_ROOT/tests/${choosen_script}"
+
+"$choosen_test" && echo "Test succed" || echo "Test failed."

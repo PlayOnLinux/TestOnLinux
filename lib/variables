@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export POLT_USER_ROOT="$HOME/.TestOnLinux"
+export POLT_API="http://www.playonlinux.com/api/"
+export POLT_WGET="wget -q"

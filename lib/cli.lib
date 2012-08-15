@@ -1,0 +1,36 @@
+#!/bin/bash
+
+
+POLT_CLI_Title ()
+{
+	# Fixme
+	clear
+	echo "$@"
+	echo "--------------------------"
+	echo ""
+}
+
+POLT_CLI_message ()
+{
+	echo ""
+	echo "$@"
+	echo ""
+}
+POLT_CLI_error ()
+{
+	echo ""
+	echo "[ ERROR ] $@"
+	echo ""
+}
+POLT_CLI_fatal ()
+{
+	echo ""
+	echo "[ FATAL ] $@"
+	echo ""
+	exit
+}
+POLT_CLI_scanf ()
+{
+	printf "$1 " 
+	read "$2" 
+}

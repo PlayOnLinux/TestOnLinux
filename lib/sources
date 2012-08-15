@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ ! "$TOL_INCLUDED" ]; then
+	source "$TESTONLINUX/lib/variables"
+	source "$TESTONLINUX/lib/testonlinux.lib"
+	source "$TESTONLINUX/lib/tests.lib"
+	source "$TESTONLINUX/lib/cli.lib"
+	TOL_INCLUDED="TRUE"
+fi

@@ -1,0 +1,93 @@
+#!/bin/bash
+
+
+POLT_MD5 ()
+{
+	# Give the md5 sum of a string
+	# Usage: POLT_MD5 <string>
+	
+	if [ "$POLT_OS" == "Mac" ]
+	then
+		printf "$1" | md5
+	fi
+	if [ "$POLT_OS" == "Linux" ]
+	then
+		printf "$1" | md5sum | awk '{print $1}'
+	fi
+}
+POLT_MD5_file ()
+{
+	# Give the md5 sum of a file
+	# Usage: POLT_MD5_file <file>
+	if [ "$POLT_OS" == "Mac" ]
+	then
+		cat "$1" | md5
+	fi
+	if [ "$POLT_OS" == "Linux" ]
+	then
+		cat "$1" | md5sum | awk '{print $1}'
+	fi
+}
+POLT_base64()
+{
+	[ "$POLT_OS" = "Linux" ] && base64
+	[ "$POLT_OS" = "Mac" ] && openssl base64
+}
+POLT_unbase64()
+{
+	[ "$POLT_OS" = "Linux" ] && base64 -d
+	[ "$POLT_OS" = "Mac" ] && openssl base64 -d
+}
+POLT_System_GetList()
+{
+	POLT_CLI_message "Getting list..."
+	$POLT_WGET "$POLT_API/testlist.php" -O "$POLT_USER_ROOT/scripts"
+}
+POLT_System_GetTests()
+{
+	POLT_CLI_message "Getting $1..."
+	$POLT_WGET "$POLT_API/gettests.php?t=$1" -O "$POLT_USER_ROOT/tests/$1"
+}
+POLT_System_TestList()
+{
+	if [ -e "$POLT_USER_ROOT/tests/$1" ]; then
+		cat "$POLT_USER_ROOT/tests/$1" | grep "() {" | sed s/" () {"/""/ > "$POLT_USER_ROOT/tests/$1_header"
+		return 0
+	else
+		POLT_CLI_error "$1 is not downloaded"
+		return 1
+	fi
+}
+POLT_System_BuildRep()
+{
+	mkdir -p "$POLT_USER_ROOT/tmp"
+	mkdir -p "$POLT_USER_ROOT/tests/"
+}
+
+getline ()
+{
+	head -n $1 | tail -n 1	
+}
+POLT_System_GetModuleList()
+{
+	POLT_CLI_Title "Available modules"
+	POLT_CLI_message "Please select a module"
+	
+	cd "$TESTONLINUX/modules"
+	i=1
+	for file in $(ls -1); do
+		grep 'TITLE=' "$file" | sed s/'TITLE='/'ModuleName='/ > "$POLT_USER_ROOT/tmp/moduleStuff"
+		source "$POLT_USER_ROOT/tmp/moduleStuff"
+		echo "$i) $ModuleName"
+		i=$(( i + 1 ))
+	done
+	
+	POLT_CLI_scanf "Your choice?" "num"
+
+	if [ "$num" -gt 0 ] && [ "$num" -lt "$i" ]; then
+		filetoexec="$(ls -1 | getline "$num")"
+		bash "$filetoexec" || POL_CLI_error "File not found $filetoexec"
+	else
+		POL_CLI_error "This module is not available"
+	fi
+}
