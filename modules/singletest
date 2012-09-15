@@ -9,10 +9,10 @@ POLT_CLI_Title "$TITLE"
 
 POLT_System_GetList
 i=1
-for script in $(cat "$POLT_USER_ROOT/scripts"); do
+while read script; do
 		echo "$i) $script"
 		i=$(( i + 1 ))
-done
+done < "$POLT_USER_ROOT/scripts"
 POLT_CLI_scanf "Your choice?" "num"
 
 choosen_script="$(cat "$POLT_USER_ROOT/scripts" | getline "$num")"
