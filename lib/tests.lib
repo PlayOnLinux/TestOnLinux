@@ -6,6 +6,7 @@
 # 2 - MD5
 POLT_DownloadAndCheck()
 {
+	POLT_CLI_message "Testing URL $1 with MD5 $2"
 	cd "$POLT_USER_ROOT/tmp/"
 	if $POLT_WGET "$1" -O download_test; then
 		if [ "$(POLT_MD5_file download_test)" = "$2" ]; then
@@ -19,4 +20,25 @@ POLT_DownloadAndCheck()
 		rm download_test
 		return 2;
 	fi
+}
+
+POLT_CheckTestsOf()
+{
+	choosen_script="$1"
+	POLT_System_GetTests
+	POLT_System_TestList "$choosen_script" || POL_CLI_fatal "No tests downloaded"
+	i=1
+	source "$POLT_USER_ROOT/tests/${choosen_script}"
+	for test in $(cat "$POLT_USER_ROOT/tests/${choosen_script}_header"); do
+		POLT_CLI_message "Testing $test"
+		choosen_test="$(cat "$POLT_USER_ROOT/tests/${choosen_script}_header" | getline "$num")"
+		i=$(( i + 1 ))
+		if ! "$choosen_test"; then
+			POLT_CLI_message "Test $choosen_script:$choosen_test failed"
+			return 1
+		fi
+			
+	done
+	
+	return 0
 }
